@@ -150,4 +150,3 @@ pod install
 ## License
 
 MIT - NOTIX DOO BEOGRAD
-# rn-hide-home-indicator

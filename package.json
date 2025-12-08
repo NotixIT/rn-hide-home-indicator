@@ -1,0 +1,55 @@
+{
+  "name": "rn-hide-home-indicator",
+  "version": "1.0.0",
+  "description": "Hide iOS home indicator with Turbo Module support",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/src/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "lib",
+    "ios",
+    "rn-hide-home-indicator.podspec",
+    "!**/__tests__"
+  ],
+  "scripts": {
+    "prepare": "bob build"
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "home-indicator",
+    "turbo-module"
+  ],
+  "author": "NOTIX DOO BEOGRAD",
+  "license": "MIT",
+  "devDependencies": {
+    "react-native-builder-bob": "^0.30.2",
+    "typescript": "^5.2.2"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "codegenConfig": {
+    "name": "RNHideHomeIndicatorSpec",
+    "type": "modules",
+    "jsSrcsDir": "src"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.json"
+        }
+      ]
+    ]
+  }
+}

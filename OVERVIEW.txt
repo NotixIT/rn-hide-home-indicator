@@ -1,0 +1,101 @@
+╔═══════════════════════════════════════════════════════════════╗
+║   rn-hide-home-indicator - Minimalist iOS Plugin             ║
+╚═══════════════════════════════════════════════════════════════╝
+
+📦 STRUCTURE (11 files - everything you need!)
+
+rn-hide-home-indicator/
+│
+├── 📄 package.json              NPM config + Turbo Module setup
+├── 📄 tsconfig.json             TypeScript config
+├── 📄 rn-hide-home-indicator.podspec   CocoaPods
+├── 📄 .gitignore                Git ignore
+│
+├── 📚 DOCUMENTATION
+│   ├── README.md                Main documentation
+│   ├── QUICK_START.md          2 minute setup guide
+│   ├── MAIN_EXAMPLE.md         How to add to main.m
+│   └── EXAMPLES.md             Practical examples
+│
+├── 💻 TypeScript Source
+│   └── src/
+│       ├── index.ts             API: hideHomeIndicator, showHomeIndicator
+│       └── NativeRNHideHomeIndicator.ts   Turbo Module spec
+│
+└── 🍎 iOS Native
+    └── ios/
+        ├── RNHideHomeIndicator.h    Header
+        └── RNHideHomeIndicator.mm   Implementation (old+new arch)
+
+═══════════════════════════════════════════════════════════════
+
+✨ FEATURES
+
+✅ iOS only (Android not needed - no home indicator)
+✅ Turbo Modules support (new architecture)
+✅ Legacy Bridge support (old architecture)
+✅ Minimal - only what you need
+✅ 11 files total
+✅ ~6KB archive
+
+═══════════════════════════════════════════════════════════════
+
+⚡ INSTALLATION
+
+1. npm install rn-hide-home-indicator && cd ios && pod install
+
+2. Add to ios/YourApp/main.m (5 lines):
+
+   #import <objc/runtime.h>
+   
+   @implementation UIViewController (HomeIndicator)
+   - (BOOL)prefersHomeIndicatorAutoHidden {
+       NSNumber *hidden = objc_getAssociatedObject(self, @selector(prefersHomeIndicatorAutoHidden));
+       return hidden ? [hidden boolValue] : NO;
+   }
+   @end
+
+3. Use:
+
+   import { hideHomeIndicator, showHomeIndicator } from 'rn-hide-home-indicator';
+   
+   useEffect(() => {
+     hideHomeIndicator();
+     return () => showHomeIndicator();
+   }, []);
+
+4. yarn ios
+
+═══════════════════════════════════════════════════════════════
+
+🎯 USE CASES
+
+✅ Video player full screen
+✅ Gaming apps
+✅ Image galleries
+✅ Presentation mode
+✅ E-book apps
+✅ Any full-screen app
+
+═══════════════════════════════════════════════════════════════
+
+💡 HOW IT WORKS
+
+1. JS calls hideHomeIndicator()
+2. Native code sets objc_setAssociatedObject on root VC
+3. Calls setNeedsUpdateOfHomeIndicatorAutoHidden
+4. iOS calls prefersHomeIndicatorAutoHidden
+5. Returns value from associated object
+6. Home indicator disappears! 🎉
+
+═══════════════════════════════════════════════════════════════
+
+📱 COMPATIBILITY
+
+✅ iOS 11+
+✅ iPhone X and newer
+✅ React Native 0.70+
+✅ Old architecture
+✅ New architecture (Turbo Modules)
+
+Production ready! 🚀

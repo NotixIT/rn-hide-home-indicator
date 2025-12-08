@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Build
+lib/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store

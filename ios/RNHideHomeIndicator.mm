@@ -7,21 +7,23 @@
 + (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        Class class = [self class];
-        
         SEL originalSelector = @selector(prefersHomeIndicatorAutoHidden);
         SEL swizzledSelector = @selector(rn_prefersHomeIndicatorAutoHidden);
         
-        Method originalMethod = class_getInstanceMethod(class, originalSelector);
-        Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+        Method originalMethod = class_getInstanceMethod([UIViewController class], originalSelector);
+        Method swizzledMethod = class_getInstanceMethod([UIViewController class], swizzledSelector);
         
-        BOOL didAddMethod = class_addMethod(class,
+        if (!originalMethod || !swizzledMethod) {
+            return;
+        }
+        
+        BOOL didAddMethod = class_addMethod([UIViewController class],
                                            originalSelector,
                                            method_getImplementation(swizzledMethod),
                                            method_getTypeEncoding(swizzledMethod));
         
         if (didAddMethod) {
-            class_replaceMethod(class,
+            class_replaceMethod([UIViewController class],
                               swizzledSelector,
                               method_getImplementation(originalMethod),
                               method_getTypeEncoding(originalMethod));
@@ -32,7 +34,7 @@
 }
 
 - (BOOL)rn_prefersHomeIndicatorAutoHidden {
-    NSNumber *hidden = objc_getAssociatedObject(self, @selector(rn_homeIndicatorHidden));
+    NSNumber *hidden = objc_getAssociatedObject(self, _cmd);
     if (hidden != nil) {
         return [hidden boolValue];
     }
@@ -55,9 +57,8 @@ RCT_EXPORT_MODULE()
         UIViewController *rootVC = [self getRootViewController];
         if (rootVC == nil) return;
         
-        // Store state using associated objects
         objc_setAssociatedObject(rootVC,
-                               @selector(rn_homeIndicatorHidden),
+                               @selector(rn_prefersHomeIndicatorAutoHidden),
                                @(hidden),
                                OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
@@ -70,18 +71,23 @@ RCT_EXPORT_MODULE()
 - (UIViewController *)getRootViewController {
     // iOS 13+ way
     if (@available(iOS 13.0, *)) {
-        for (UIWindowScene *scene in UIApplication.sharedApplication.connectedScenes) {
-            if (scene.activationState == UISceneActivationStateForegroundActive) {
-                UIWindow *window = scene.windows.firstObject;
-                if (window.isKeyWindow) {
-                    return window.rootViewController;
+        NSSet<UIScene *> *connectedScenes = [UIApplication sharedApplication].connectedScenes;
+        for (UIScene *scene in connectedScenes) {
+            if ([scene isKindOfClass:[UIWindowScene class]]) {
+                UIWindowScene *windowScene = (UIWindowScene *)scene;
+                if (windowScene.activationState == UISceneActivationStateForegroundActive) {
+                    for (UIWindow *window in windowScene.windows) {
+                        if (window.isKeyWindow) {
+                            return window.rootViewController;
+                        }
+                    }
                 }
             }
         }
     }
     
     // Fallback for older versions
-    UIWindow *window = UIApplication.sharedApplication.delegate.window;
+    UIWindow *window = [UIApplication sharedApplication].delegate.window;
     return window.rootViewController;
 }
 

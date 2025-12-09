@@ -1,6 +1,6 @@
 {
   "name": "rn-hide-home-indicator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hide iOS home indicator with Turbo Module support",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

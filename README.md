@@ -9,46 +9,7 @@ npm install rn-hide-home-indicator
 cd ios && pod install
 ```
 
-## iOS Setup
-
-### For newer React Native (with main.m)
-
-Open `ios/YourApp/main.m` and add this **above** the `int main` function:
-
-```objc
-#import <UIKit/UIKit.h>
-#import <objc/runtime.h>
-
-@implementation UIViewController (HomeIndicator)
-
-- (BOOL)prefersHomeIndicatorAutoHidden {
-    NSNumber *hidden = objc_getAssociatedObject(self, @selector(prefersHomeIndicatorAutoHidden));
-    return hidden ? [hidden boolValue] : NO;
-}
-
-@end
-
-int main(int argc, char * argv[]) {
-  // rest of the code...
-}
-```
-
-### For older versions (with AppDelegate)
-
-Open `ios/YourApp/AppDelegate.mm` and add after imports:
-
-```objc
-#import <objc/runtime.h>
-
-@implementation UIViewController (HomeIndicator)
-
-- (BOOL)prefersHomeIndicatorAutoHidden {
-    NSNumber *hidden = objc_getAssociatedObject(self, @selector(prefersHomeIndicatorAutoHidden));
-    return hidden ? [hidden boolValue] : NO;
-}
-
-@end
-```
+**That's it!** No additional setup required. The plugin uses method swizzling to automatically work with any view controller.
 
 ## Usage
 

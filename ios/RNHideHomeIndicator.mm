@@ -2,6 +2,46 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 
+@implementation UIViewController (RNHomeIndicatorSwizzling)
+
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class class = [self class];
+        
+        SEL originalSelector = @selector(prefersHomeIndicatorAutoHidden);
+        SEL swizzledSelector = @selector(rn_prefersHomeIndicatorAutoHidden);
+        
+        Method originalMethod = class_getInstanceMethod(class, originalSelector);
+        Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+        
+        BOOL didAddMethod = class_addMethod(class,
+                                           originalSelector,
+                                           method_getImplementation(swizzledMethod),
+                                           method_getTypeEncoding(swizzledMethod));
+        
+        if (didAddMethod) {
+            class_replaceMethod(class,
+                              swizzledSelector,
+                              method_getImplementation(originalMethod),
+                              method_getTypeEncoding(originalMethod));
+        } else {
+            method_exchangeImplementations(originalMethod, swizzledMethod);
+        }
+    });
+}
+
+- (BOOL)rn_prefersHomeIndicatorAutoHidden {
+    NSNumber *hidden = objc_getAssociatedObject(self, @selector(rn_homeIndicatorHidden));
+    if (hidden != nil) {
+        return [hidden boolValue];
+    }
+    
+    return [self rn_prefersHomeIndicatorAutoHidden];
+}
+
+@end
+
 @implementation RNHideHomeIndicator
 
 RCT_EXPORT_MODULE()
@@ -17,7 +57,7 @@ RCT_EXPORT_MODULE()
         
         // Store state using associated objects
         objc_setAssociatedObject(rootVC,
-                               @selector(prefersHomeIndicatorAutoHidden),
+                               @selector(rn_homeIndicatorHidden),
                                @(hidden),
                                OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
